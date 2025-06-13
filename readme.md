@@ -9,4 +9,6 @@ You can finde the MMS here https://github.com/mackorone/mms/tree/main
 - A* with time calculation  
     - Uses Speed, Acceleration, Decelerationn  
     - Still unfinished so results uncertain  
-
+## Usage    
+- If you want to use it in MMS theres a great guide bei mms for Python which helped me very much https://github.com/mackorone/mms-python  
+- If you don't want to use Visual Studio code for your project, the mice_API Import might not work, so it will be needed to change it in any main.py
