@@ -4,8 +4,8 @@
 ## Content:  
 -Simple Djikstra  
 -Simple A*  
-  -Also a version that shows the Mice reverting Path to a Node not next to the current Node
+    -Also a version that shows the Mice reverting Path to a Node not next to the current Node
 -A* with time calculation  
-  -Uses Speed, Acceleration, Decelerationn  
-  -Still unfinished so results uncertain  
+    -Uses Speed, Acceleration, Decelerationn  
+    -Still unfinished so results uncertain  
 
