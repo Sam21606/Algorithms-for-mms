@@ -1,6 +1,5 @@
 from typing import List, Tuple
-import math
-import API
+import mice_API
 import sys
 import Helper
 
@@ -10,8 +9,8 @@ def log(string: str) -> None:
 
 def main() -> None:
     log("Starting...")
-    API.setColor(0, 0, "G")
-    API.setText(0, 0, "abc")
+    mice_API.setColor(0, 0, "G")
+    mice_API.setText(0, 0, "abc")
     currentNode: Helper.Node = Helper.STARTING_NODE
     onGoal: bool = False
     direction: int = 0
@@ -55,24 +54,24 @@ def main() -> None:
 def writePathNewCurrentNode(newNode : Helper.Node, currentNode : Helper.Node):
     pathToNode = newNode.pathToThisNode
     for node in pathToNode:
-        API.setColor(node.xaxis, node.yaxis, 'B')
-        API.setText(node.xaxis, node.yaxis, str(node.cost))
+        mice_API.setColor(node.xaxis, node.yaxis, 'B')
+        mice_API.setText(node.xaxis, node.yaxis, str(node.cost))
 
     for node in currentNode.pathToThisNode:
         if node in pathToNode:
-            API.setColor(node.xaxis, node.yaxis, 'Y')
+            mice_API.setColor(node.xaxis, node.yaxis, 'Y')
         else:
-            API.setColor(node.xaxis, node.yaxis, 'B')
-        API.setText(node.xaxis, node.yaxis, str(node.cost))
+            mice_API.setColor(node.xaxis, node.yaxis, 'B')
+        mice_API.setText(node.xaxis, node.yaxis, str(node.cost))
 
 def writeInfo(openNodesDict , closedDict):
     for node in openNodesDict.values():
-         API.setColor(node.xaxis, node.yaxis, 'G')
-         API.setText(node.xaxis, node.yaxis, str(node.cost))
+         mice_API.setColor(node.xaxis, node.yaxis, 'G')
+         mice_API.setText(node.xaxis, node.yaxis, str(node.cost))
 
     for node in closedDict.values():
-        API.setColor(node.xaxis, node.yaxis, "R")
-        API.setText(node.xaxis, node.yaxis, str(node.cost))
+        mice_API.setColor(node.xaxis, node.yaxis, "R")
+        mice_API.setText(node.xaxis, node.yaxis, str(node.cost))
     
 
 def writeWalls(openList : List[str], direction : int, currentNode : Helper.Node):
@@ -101,12 +100,12 @@ def writeWalls(openList : List[str], direction : int, currentNode : Helper.Node)
         abs_idx = (facing_idx + offset) % 4
         abs_dir = absolute_dirs[abs_idx]
         dir_char = dir_to_char[abs_dir]
-        API.setWall(currentNode.xaxis, currentNode.yaxis, dir_char)
+        mice_API.setWall(currentNode.xaxis, currentNode.yaxis, dir_char)
 
 def writeFinishedPath(pathToThisNode : List[Helper.Node]):
     for node in pathToThisNode:
-        API.setColor(node.xaxis, node.yaxis, 'B')
-        API.setText(node.xaxis, node.yaxis, str(node.cost))
+        mice_API.setColor(node.xaxis, node.yaxis, 'B')
+        mice_API.setText(node.xaxis, node.yaxis, str(node.cost))
 
 def moveToNewNodeOrParent(currentNode : Helper.Node, newNode : Helper.Node, direction : int, pathToThisNode : List[Helper.Node])-> Tuple[ List[Helper.Node], int]:
     log("Moving to next Node...")
@@ -140,7 +139,7 @@ def checkIfNodeIsNext(currentNode : Helper.Node, newNode : Helper.Node) -> bool:
     return True
 
 def checkCurrent() -> Helper.IsBlocked:
-    stateAhead = Helper.IsBlocked(API.wallLeft(), API.wallRight(), API.wallFront(0))
+    stateAhead = Helper.IsBlocked(mice_API.wallLeft(), mice_API.wallRight(), mice_API.wallFront(0))
     return stateAhead
 
 def getCurrentNodes(currentNode: Helper.Node, direction: int) -> List[Helper.Node]:
@@ -223,7 +222,7 @@ def moveToNewNode(currentNode : Helper.Node, newNode : Helper.Node, direction : 
     if newdirection is None:
         log(f"moveToNewNodeERROR: Kein Mapping für Vektor ({dx},{dy})!")
     if newdirection == direction:
-        API.moveForward()
+        mice_API.moveForward()
     else:
         start_angle = direction_angles[direction]
         end_angle = direction_angles[newdirection]
@@ -233,13 +232,13 @@ def moveToNewNode(currentNode : Helper.Node, newNode : Helper.Node, direction : 
 
         if right_turn <= left_turn:
             while right_turn >= 90:
-                API.turnRight90()
+                mice_API.turnRight90()
                 right_turn -= 90
         else:
             while left_turn >= 90:
-                API.turnLeft90()
+                mice_API.turnLeft90()
                 left_turn -= 90
-        API.moveForward()
+        mice_API.moveForward()
     return newdirection
 
     

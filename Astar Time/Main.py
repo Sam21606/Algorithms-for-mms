@@ -1,6 +1,6 @@
 from typing import List, Tuple
 import math
-import API
+import mice_API
 import sys
 import Helper
 
@@ -10,8 +10,8 @@ def log(string: str) -> None:
 
 def main() -> None:
     log("Starting...")
-    API.setColor(0, 0, "G")
-    API.setText(0, 0, "abc")
+    mice_API.setColor(0, 0, "G")
+    mice_API.setText(0, 0, "abc")
     currentNode: Helper.Node = Helper.STARTING_NODE
     onGoal: bool = False
     v0: float = 0
@@ -134,7 +134,7 @@ def checkTurn(currentNode: Helper.Node, node: Helper.Node) -> int:
     return direction_map.get((dx, dy), 0)
 
 def checkCurrent() -> Helper.IsBlocked:
-    return Helper.IsBlocked(API.wallLeft(), API.wallRight(), API.wallFront(0))
+    return Helper.IsBlocked(mice_API.wallLeft(), mice_API.wallRight(), mice_API.wallFront(0))
 
 def speedAfterDistance(v0: float, vmax: float, a: float, d: float) -> float:
     v: float = math.sqrt(v0 * v0 + 2 * a * d)
@@ -256,7 +256,7 @@ def moveToNewNode(currentNode : Helper.Node, newNode : Helper.Node, direction : 
     dy = newNode.yaxis - currentNode.yaxis
     newdirection = direction_map.get((dx, dy))
     if newdirection == direction:
-        API.moveForward()
+        mice_API.moveForward()
     else:
         start_angle = direction_angles[direction]
         end_angle = direction_angles[newdirection]
@@ -268,13 +268,13 @@ def moveToNewNode(currentNode : Helper.Node, newNode : Helper.Node, direction : 
         # Decide the shorter turn direction
         if right_turn <= left_turn:
             while right_turn >= 90:
-                API.turnRight90()
+                mice_API.turnRight90()
                 right_turn -= 90
         else:
             while left_turn >= 90:
-                API.turnLeft90()
+                mice_API.turnLeft90()
                 left_turn -= 90
-        API.moveForward()
+        mice_API.moveForward()
     return newdirection
 
     
@@ -300,12 +300,12 @@ direction_angles = {
 
 def writeInfo(openNodesDict , closedDict):
     for node in openNodesDict.values():
-        API.setColor(node.xaxis, node.yaxis, 'G')
-        API.setText(node.xaxis, node.yaxis, str(node.cost))
+        mice_API.setColor(node.xaxis, node.yaxis, 'G')
+        mice_API.setText(node.xaxis, node.yaxis, str(node.cost))
 
     for node in closedDict.values():
-        API.setColor(node.xaxis, node.yaxis, "R")
-        API.setText(node.xaxis, node.yaxis, str(node.cost))
+        mice_API.setColor(node.xaxis, node.yaxis, "R")
+        mice_API.setText(node.xaxis, node.yaxis, str(node.cost))
 
 def writeWalls(openList : List[str], direction : int, currentNode : Helper.Node):
     # Absolute directions in clockwise order
@@ -322,8 +322,8 @@ def writeWalls(openList : List[str], direction : int, currentNode : Helper.Node)
 
 def writeFinishedPath(pathToThisNode : List[Helper.Node]):
     for node in pathToThisNode:
-        API.setColor(node.xaxis, node.yaxis, 'B')
-        API.setText(node.xaxis, node.yaxis, str(node.cost))
+        mice_API.setColor(node.xaxis, node.yaxis, 'B')
+        mice_API.setText(node.xaxis, node.yaxis, str(node.cost))
 
 def writeWalls(openList : List[str], direction : int, currentNode : Helper.Node):
     # Absolute directions in clockwise order
@@ -351,7 +351,7 @@ def writeWalls(openList : List[str], direction : int, currentNode : Helper.Node)
         abs_idx = (facing_idx + offset) % 4
         abs_dir = absolute_dirs[abs_idx]
         dir_char = dir_to_char[abs_dir]
-        API.setWall(currentNode.xaxis, currentNode.yaxis, dir_char)
+        mice_API.setWall(currentNode.xaxis, currentNode.yaxis, dir_char)
 
 if __name__ == "__main__":
     main()
