@@ -1,7 +1,7 @@
 # Hello there these are some Algorithms for the MMS the Micro Mouse Simulator, Shoutout goes to everyone from the Team.  
 ## Info:  
 This is a Project for my University Module in which I study the diffrences between diffrent Maze solving Algorithm.   
-You can finde the MMS here https://github.com/mackorone/mms/tree/main?tab=readme-ov-file#table-of-contents    
+You can finde the MMS here https://github.com/mackorone/mms/tree/main
 ## Content:  
 - Simple Djikstra  
 - Simple A*  
