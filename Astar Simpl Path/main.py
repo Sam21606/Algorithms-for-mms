@@ -1,5 +1,7 @@
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from typing import List, Tuple
-import mice_API
+from Tools import mice_API
 import sys
 import Helper
 

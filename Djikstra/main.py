@@ -1,6 +1,8 @@
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from typing import List, Tuple
 import math
-import mice_API
+from Tools import mice_API
 import sys
 import Helper
 
@@ -34,7 +36,7 @@ def main() -> None:
         writeInfo(openNodesDict , closedDict)
         log(f"Determin fastest Node...")
         newNode = determinFastetNode(list(openNodesDict.values()), currentNode)
-        log(f"Next node has position ({newNode.xaxis}, {newNode.yaxis}) and has cos  {newNode.cost}")
+        log(f"Next node has position ({newNode.xaxis}, {newNode.yaxis}) and has cost  {newNode.cost}")
         if currentNode is not Helper.STARTING_NODE:
             pathToNode = newNode.parent.pathToThisNode
         pathToNode, direction = moveToNewNodeOrParent(currentNode, newNode, direction, pathToNode)
@@ -49,6 +51,8 @@ def main() -> None:
         currentNode = newNode
         if (currentNode.xaxis, currentNode.yaxis) in Helper.GOAL_NODES:
             onGoal = True
+            for node in currentNode.pathToThisNode:
+                mice_API.setColor(node.xaxis, node.yaxis, 'B')
             log(f"Shortest path is {currentNode.pathToThisNode}")
             log(f"The Time would be {calculateEndResultTime(currentNode) :.2f}s")
 
