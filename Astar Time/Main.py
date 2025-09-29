@@ -13,11 +13,10 @@ def log(string: str) -> None:
 def main() -> None:
     log("Starting...")
     mice_API.setColor(0, 0, "G")
-    mice_API.setText(0, 0, "abc")
+    mice_API.setText(0, 0, "0")
     currentNode: Helper.Node = Helper.STARTING_NODE
     onGoal: bool = False
     v0: float = 0
-    totalTime: float
     direction: int = 0
     openNodesDict = {}
     closedDict = {}
@@ -89,46 +88,30 @@ def checkIfNodeIsNext(currentNode : Helper.Node, newNode : Helper.Node) -> bool:
 
 def calculateCost(v0: float, direction: int, currentNode: Helper.Node, node: Helper.Node) -> Tuple[float, float, float]:
     heuristic: float = calculateHeuristic(node, v0, direction)
-    vOne, vTwo = calculateTimeCost(v0, direction, currentNode, node)
-    return vOne, vTwo , heuristic
+    time, vTwo = calculateTimeCost(v0, direction, currentNode, node)
+    return time, vTwo , heuristic
 
 def calculateTimeCost(v0: float, direction: int, currentNode: Helper.Node, node: Helper.Node) -> Tuple[float, float]:
     dx = node.xaxis - currentNode.xaxis
     dy = node.yaxis - currentNode.yaxis
     newdirection = direction_map.get((dx, dy))
-    turn = checkWhatTurn(direction, currentNode, node)
-    distance = Helper.DISTANCE_SHORT
-
-    if v0 == Helper.VMAX:
-        if newdirection == direction:
-            match newdirection:
-                case 0 | -2 | 2 | 4:
-                    return Helper.TIME_SHORT, v0
-                case _:
-                    return Helper.TIME_LONG, v0
-        else:
-            return timeWithTurn(v0, turn, distance)
+    #log("we dont have 0 I hope v=" + str(v0))
+    if newdirection == direction:
+        return timeCalculation(v0, Helper.VMAX, Helper.A, Helper.DISTANCE_SHORT)
     else:
-        if newdirection == direction:
-            return timeCalculation(v0, Helper.VMAX, Helper.A, Helper.DISTANCE_SHORT)
-        else:
-            return timeWithTurn(v0, turn, distance)
+        return timeWithTurn(v0)
 
-def timeWithTurn(v0: float, turn: int, distance: float) -> Tuple[float, float]:
+def timeWithTurn(v0: float) -> Tuple[float, float]:
     radius = Helper.RADIUS_TURN90
-    v_turn = Helper.VMAX_TURN90
+    v_turn = Helper.VMAX_TURN
+    #log("Hey we have a turn v=" + str(v0))
 
     arc_length = radius * math.radians(90)
     decel_time = timeToSlowDown(v0,v_turn, Helper.DECEL)
     turn_time = arc_length / v_turn
     total_time = decel_time + turn_time
 
-    return total_time, v_turn
-
-def checkWhatTurn(direction: int, currentNode: Helper.Node, node: Helper.Node) -> int:
-    nodeDirection = checkTurn(currentNode, node)
-    diff = abs(direction - nodeDirection)
-    return diff % 5
+    return total_time, speedAfterDistance(v_turn, Helper.VMAX, Helper.A, Helper.DISTANCE_SHORT)
 
 def checkTurn(currentNode: Helper.Node, node: Helper.Node) -> int:
     dx = node.xaxis - currentNode.xaxis
@@ -140,7 +123,7 @@ def checkCurrent() -> Helper.IsBlocked:
 
 def speedAfterDistance(v0: float, vmax: float, a: float, d: float) -> float:
     v: float = math.sqrt(v0 * v0 + 2 * a * d)
-    return Helper.VMAX if v > vmax else v
+    return vmax if v > vmax else v
 
 def timeCalculation(v0: float, vmax: float, a: float, d: float) -> Tuple[float, float]:
     vend = speedAfterDistance(v0, vmax, a, d)
@@ -192,7 +175,8 @@ def calculateCostForCurrentNodes(v0: float, direction: int, openNodes: List[Help
     for node in openNodes:
         time : float = 0
         heuristic : float = 0
-        time, v0, heuristic = calculateCost(v0, direction, currentNode, node)
+        time, v0, heuristic = calculateCost(currentNode.v0, direction, currentNode, node)
+        #log("time is " + str(time) + " v0 is " + str(v0))
         node.cost = time + heuristic + currentNode.time
         node.time = time + currentNode.time
         node.parent = currentNode
@@ -247,7 +231,7 @@ def calculateTimeToGoal(dx: float, dy : float, turn: int, v0: float, dxOrdy) -> 
         vend : float = 0
         timeAfterDecel : float = 0
         timeBeforeDecel, vend = timeCalculation(Helper.VMAX, Helper.VMAX, Helper.A, first)
-        timeForDecel += timeToSlowDown(vend, Helper.VMAX_TURN_MIDDLE, Helper.A)
+        timeForDecel += timeToSlowDown(vend, Helper.VMAX_TURN, Helper.A)
         timeAfterDecel, vunimportant = timeCalculation(Helper.VMAX, Helper.VMAX, Helper.A, second)
         return timeBeforeDecel + timeForDecel + timeAfterDecel  
     time, v0  = timeCalculation(v0, Helper.VMAX, Helper.A, dx + dy)
@@ -303,11 +287,11 @@ direction_angles = {
 def writeInfo(openNodesDict , closedDict):
     for node in openNodesDict.values():
         mice_API.setColor(node.xaxis, node.yaxis, 'G')
-        mice_API.setText(node.xaxis, node.yaxis, str(node.cost))
+        mice_API.setText(node.xaxis, node.yaxis, str(node.time))
 
     for node in closedDict.values():
         mice_API.setColor(node.xaxis, node.yaxis, "R")
-        mice_API.setText(node.xaxis, node.yaxis, str(node.cost))
+        mice_API.setText(node.xaxis, node.yaxis, str(node.time))
 
 def writeWalls(openList : List[str], direction : int, currentNode : Helper.Node):
     # Absolute directions in clockwise order
@@ -325,7 +309,7 @@ def writeWalls(openList : List[str], direction : int, currentNode : Helper.Node)
 def writeFinishedPath(pathToThisNode : List[Helper.Node]):
     for node in pathToThisNode:
         mice_API.setColor(node.xaxis, node.yaxis, 'B')
-        mice_API.setText(node.xaxis, node.yaxis, str(node.cost))
+        mice_API.setText(node.xaxis, node.yaxis, str(node.time))
 
 def writeWalls(openList : List[str], direction : int, currentNode : Helper.Node):
     # Absolute directions in clockwise order

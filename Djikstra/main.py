@@ -70,24 +70,12 @@ def calculateTimeCost(v0: float, direction: int, currentNode: Helper.Node, node:
     dx = node.xaxis - currentNode.xaxis
     dy = node.yaxis - currentNode.yaxis
     newdirection = direction_map.get((dx, dy))
-
-    if v0 == Helper.VMAX:
-        if newdirection == direction:
-            match newdirection:
-                case 0 | -2 | 2 | 4:
-                    return Helper.TIME_SHORT, v0, newdirection
-                case _:
-                    return Helper.TIME_LONG, v0, newdirection
-        else:
-            t, vend = timeWithTurn(v0)
-            return t, vend, newdirection
+    if newdirection == direction:
+        t , vend = timeCalculation(v0, Helper.VMAX, Helper.A, Helper.DISTANCE_SHORT)
+        return t, vend, newdirection
     else:
-        if newdirection == direction:
-            t , vend = timeCalculation(v0, Helper.VMAX, Helper.A, Helper.DISTANCE_SHORT)
-            return t, vend, newdirection
-        else:
-            t, vend = timeWithTurn(v0)
-            return t, vend, newdirection
+        t, vend = timeWithTurn(v0)
+        return t, vend, newdirection
         
 def timeCalculation(v0: float, vmax: float, a: float, d: float) -> Tuple[float, float]:
     vend = speedAfterDistance(v0, vmax, a, d)
@@ -100,12 +88,7 @@ def timeCalculation(v0: float, vmax: float, a: float, d: float) -> Tuple[float, 
 
 def speedAfterDistance(v0: float, vmax: float, a: float, d: float) -> float:
     v: float = math.sqrt(v0 * v0 + 2 * a * d)
-    return Helper.VMAX if v > vmax else v
-        
-def checkWhatTurn(direction: int, currentNode: Helper.Node, node: Helper.Node) -> int:
-    nodeDirection = checkTurn(currentNode, node)
-    diff = abs(direction - nodeDirection)
-    return diff % 5
+    return vmax if v > vmax else v
 
 def checkTurn(currentNode: Helper.Node, node: Helper.Node) -> int:
     dx = node.xaxis - currentNode.xaxis
@@ -114,14 +97,13 @@ def checkTurn(currentNode: Helper.Node, node: Helper.Node) -> int:
 
 def timeWithTurn(v0: float) -> Tuple[float, float]:
     radius = Helper.RADIUS_TURN90
-    v_turn = Helper.VMAX_TURN90
+    v_turn = Helper.VMAX_TURN
 
     arc_length = radius * math.radians(90)
     decel_time = timeToSlowDown(v0,v_turn, Helper.DECEL)
     turn_time = arc_length / v_turn
     total_time = decel_time + turn_time
-
-    return total_time, v_turn
+    return total_time, speedAfterDistance(v_turn, Helper.VMAX, Helper.A, Helper.DISTANCE_SHORT)
 
 def timeToSlowDown(v0: float, vmax: float, a: float) -> float:
     if v0 < vmax:
@@ -213,8 +195,8 @@ def determinFastetNode(currentNodes: List[Helper.Node], currentNode : Helper.Nod
         if node.cost <= currentFastest.cost and node is not currentNode:
             if currentFastest.cost != node.cost:
                 currentFastest = node
-            elif node.parent == currentNode:
-                currentFastest = node
+            # elif node.parent == currentNode:
+            #     currentFastest = node
     return currentFastest
 
 def moveToNewNode(currentNode : Helper.Node, newNode : Helper.Node, direction : int)-> int:
@@ -253,13 +235,9 @@ direction_map = {
 
 direction_angles = {
     0: 0,     # North
-    -1: 45,   # Northeast
     -2: 90,   # East
-    -3: 135,  # Southeast
     4: 180,   # South
-    3: 225,   # Southwest
     2: 270,   # West
-    1: 315    # Northwest
 }
 
 def writeInfo(openNodesDict , closedDict):
