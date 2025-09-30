@@ -24,7 +24,7 @@ def main() -> None:
 
     while not onGoal:
         currentNodes = []
-        currentNodes = getCurrentNodes(currentNode, direction, v0, pathToNode)
+        currentNodes, followPath, pathNode  = getCurrentNodes(currentNode, direction, v0, pathToNode)
         for node in currentNodes:
             pos = (node.xaxis, node.yaxis)
             if pos in closedDict and node.cost < closedDict[pos].cost:
@@ -34,7 +34,10 @@ def main() -> None:
                 if pos not in openNodesDict or node.cost < openNodesDict[pos].cost:
                     openNodesDict[pos] = node
         writeInfo(openNodesDict , closedDict)
-        newNode = determinFastetNode(list(openNodesDict.values()), currentNode)
+        if followPath:
+            newNode = pathNode
+        else:
+            newNode = determinFastetNode(list(openNodesDict.values()), currentNode)
 
         if currentNode is not Helper.STARTING_NODE:
             pathToNode = newNode.parent.pathToThisNode
@@ -139,7 +142,7 @@ def timeToSlowDown(v0: float, vmax: float, a: float) -> float:
         return 0
     return (v0 - vmax) / a
 
-def getCurrentNodes(currentNode: Helper.Node, direction: int, v0 : int, pathToThisNode : List[Helper.Node]) -> List[Helper.Node]:
+def getCurrentNodes(currentNode: Helper.Node, direction: int, v0 : int, pathToThisNode : List[Helper.Node]):
     openNodes: List[Helper.Node] = []
     openDirections : Helper.IsBlocked = checkCurrent()
     movements = {"ahead": (0, 1), "left": (-1, 0), "right": (1, 0)}
@@ -150,12 +153,22 @@ def getCurrentNodes(currentNode: Helper.Node, direction: int, v0 : int, pathToTh
         openList.append("right")
     if not openDirections.ahead:
         openList.append("ahead")
+    if len(openList) == 1:
+        followPath = True
+        log("Follow path was set true")
+    else:
+        followPath = False
+        log("Follow path was set false openlist is" + str(openList))
     writeWalls(openList, direction, currentNode)
     for key in openList:
         if not getattr(openDirections, key):
             mx, my = rotate(*movements[key], direction)
             openNodes.append(Helper.Node(currentNode.cost, currentNode.xaxis + mx, currentNode.yaxis + my))
-    return calculateCostForCurrentNodes(v0, direction, openNodes, currentNode)
+    if len(openList) != 1:
+        pathNode = 0
+    else:
+        pathNode = openNodes[0]
+    return calculateCostForCurrentNodes(v0, direction, openNodes, currentNode), followPath, pathNode
 
 def rotate(dx: int, dy: int, direction: int) -> Tuple[int, int]:
     # direction: 0 = North, -2 = East, 4 = South, 2 = West
