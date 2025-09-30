@@ -23,7 +23,7 @@ def main() -> None:
 
     while not onGoal:
         currentNodes = []
-        log("Getting current Nodes...")
+        #log("Getting current Nodes...")
         currentNodes = getCurrentNodes(currentNode, direction)
         for node in currentNodes:
             pos = (node.xaxis, node.yaxis)
@@ -34,9 +34,9 @@ def main() -> None:
                 if pos not in openNodesDict or node.cost < openNodesDict[pos].cost:
                     openNodesDict[pos] = node
         writeInfo(openNodesDict , closedDict)
-        log(f"Determin fastest Node...")
+        #log(f"Determin fastest Node...")
         newNode = determinFastetNode(list(openNodesDict.values()), currentNode)
-        log(f"Next node has position ({newNode.xaxis}, {newNode.yaxis}) and has cost  {newNode.cost}")
+        #log(f"Next node has position ({newNode.xaxis}, {newNode.yaxis}) and has cost  {newNode.cost}")
         if currentNode is not Helper.STARTING_NODE:
             pathToNode = newNode.parent.pathToThisNode
         pathToNode, direction = moveToNewNodeOrParent(currentNode, newNode, direction, pathToNode)
@@ -112,7 +112,7 @@ def timeToSlowDown(v0: float, vmax: float, a: float) -> float:
     return (v0 - vmax) / a
 
 def moveToNewNodeOrParent(currentNode : Helper.Node, newNode : Helper.Node, direction : int, pathToThisNode : List[Helper.Node])-> Tuple[ List[Helper.Node], int]:
-    log("Moving to next Node...")
+    #log("Moving to next Node...")
     if checkIfNodeIsNext(currentNode, newNode):
         pathToThisNode.append(newNode)
         return pathToThisNode, moveToNewNode(currentNode, newNode, direction)
@@ -194,9 +194,9 @@ def determinFastetNode(currentNodes: List[Helper.Node], currentNode : Helper.Nod
     currentFastest = Helper.Node(10000, 0, 0)
     currentDistance = 100
     for node in currentNodes:
-        if node.cost < currentFastest.cost and node is not currentNode:
+        if node.cost <= currentFastest.cost and node is not currentNode:
             newDistance = calculateDistanceTwoNodes(node, currentNode)
-            if currentFastest.cost != node.cost and newDistance < currentDistance:
+            if currentFastest.cost > node.cost or newDistance < currentDistance:
                 currentDistance = newDistance
                 currentFastest = node
             elif node.parent == currentNode:

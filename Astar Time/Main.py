@@ -189,10 +189,10 @@ def determinFastetNode(currentNodes: List[Helper.Node], currentNode : Helper.Nod
     currentFastest = Helper.Node(10000, 0, 0)
     currentDistance = 100
     for node in currentNodes:
-        if node.cost < currentFastest.cost and node is not currentNode:
-            x,y,turn,dxdy = calculateDistanceTwoNodes(node, currentNode, 0)
+        if node.cost <= currentFastest.cost and node is not currentNode:
+            x,y,t,d = calculateDistanceTwoNodes(node, currentNode,0)
             newDistance = x+y
-            if currentFastest.cost != node.cost and newDistance < currentDistance:
+            if currentFastest.cost > node.cost or newDistance < currentDistance:
                 currentDistance = newDistance
                 currentFastest = node
             elif node.parent == currentNode:
