@@ -64,6 +64,7 @@ def calculateEndResultTime(currentNode : Helper.Node):
     for node in currentNode.pathToThisNode:
         newTime, v0, direction = calculateTimeCost(v0, direction, node.parent, node)
         totalTme += newTime
+        mice_API.setText(node.xaxis, node.yaxis, str(totalTme))
     return totalTme
 
 def calculateTimeCost(v0: float, direction: int, currentNode: Helper.Node, node: Helper.Node) -> Tuple[float, float]:
