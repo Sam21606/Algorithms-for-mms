@@ -234,9 +234,12 @@ def calculateCost(node: Helper.Node) -> Tuple[float, float]:
 
 def determinFastetNode(currentNodes: List[Helper.Node], currentNode : Helper.Node) -> Helper.Node:
     currentFastest = Helper.Node(10000, 0, 0)
+    currentDistance = 100
     for node in currentNodes:
-        if node.cost <= currentFastest.cost and node is not currentNode:
-            if currentFastest.cost != node.cost:
+        if node.cost < currentFastest.cost and node is not currentNode:
+            newDistance = calculateDistanceTwoNodes(node, currentNode)
+            if currentFastest.cost != node.cost and newDistance < currentDistance:
+                currentDistance = newDistance
                 currentFastest = node
             elif node.parent == currentNode:
                 currentFastest = node

@@ -187,9 +187,13 @@ def calculateCostForCurrentNodes(v0: float, direction: int, openNodes: List[Help
 
 def determinFastetNode(currentNodes: List[Helper.Node], currentNode : Helper.Node) -> Helper.Node:
     currentFastest = Helper.Node(10000, 0, 0)
+    currentDistance = 100
     for node in currentNodes:
         if node.cost < currentFastest.cost and node is not currentNode:
-            if currentFastest.cost != node.cost:
+            x,y,turn,dxdy = calculateDistanceTwoNodes(node, currentNode, 0)
+            newDistance = x+y
+            if currentFastest.cost != node.cost and newDistance < currentDistance:
+                currentDistance = newDistance
                 currentFastest = node
             elif node.parent == currentNode:
                 currentFastest = node
