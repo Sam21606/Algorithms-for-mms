@@ -195,8 +195,8 @@ def determinFastetNode(currentNodes: List[Helper.Node], currentNode : Helper.Nod
         if node.cost <= currentFastest.cost and node is not currentNode:
             if currentFastest.cost != node.cost:
                 currentFastest = node
-            # elif node.parent == currentNode:
-            #     currentFastest = node
+            elif node.parent == currentNode:
+                currentFastest = node
     return currentFastest
 
 def moveToNewNode(currentNode : Helper.Node, newNode : Helper.Node, direction : int)-> int:
